@@ -1,0 +1,9 @@
+░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter  main ?2 ▓▒░····································································░▒▓ system Node ▓▒░
+❯ curl "http://127.0.0.1:8081/call-echo?msg=hello"
+{"service_a":{"echo":"hello"},"service_b":"ok"}
+░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter  main ?2 ▓▒░····································································░▒▓ system Node ▓▒░
+❯ curl "http://127.0.0.1:8081/call-echo?msg=hello"
+{"error":"Get \"http://127.0.0.1:8080/echo?msg=hello\": dial tcp 127.0.0.1:8080: connect: connection refused","service_a":"unavailable","service_b":"ok"}
+░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter  main ?2 ▓▒░····································································░▒▓ system Node ▓▒░
+❯ curl "http://127.0.0.1:8081/call-echo?msg=hello"
+curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
