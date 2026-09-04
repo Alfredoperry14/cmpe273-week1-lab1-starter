@@ -24,61 +24,53 @@ Minimum requirements:
    - how to run locally
    - success + failure proof (curl output or screenshot)
    - 1 short paragraph: “What makes this distributed?”
+## How to Run Locally
 
+**One-time setup**
 
-Run these commands on one terminal (also with output):
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter  main ▓▒░·······································································░▒▓ system Node ▓▒░
-❯ cd go-http 
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter/go-http  main ▓▒░·······························································░▒▓ system Node ▓▒░
-❯ cd service-a 
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter/go-http/service-a  main ▓▒░····························································░▒▓ system Node ▓▒░
-❯ go mod init service-a
-go: creating new go.mod: module service-a
-go: to add module requirements and sums:
-        go mod tidy
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter/go-http/service-a  main ?2 ▓▒░········································░▒▓ 13m 36s  system Node ▓▒░
-❯ go run .             
-2026/09/03 12:36:30 service=A listening on :8080
-2026/09/03 12:36:37 service=A endpoint=/echo status=ok latency_ms=0
-^Csignal: interrupt
+```bash
+cd go-http/service-a && go mod init service-a
+cd ../service-b && go mod init service-b
+```
 
-Second terminal: 
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter  main ?1 ▓▒░····································································░▒▓ system Node ▓▒░
-❯ cd go-http 
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter/go-http  main ?1 ▓▒░····························································░▒▓ system Node ▓▒░
-❯ cd service-b  
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter/go-http/service-b  main ?1 ▓▒░··················································░▒▓ system Node ▓▒░
-❯ go mod init service-b
-go: creating new go.mod: module service-b
-go: to add module requirements and sums:
-        go mod tidy
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter/go-http/service-b  main ?2 ▓▒░··················································░▒▓ system Node ▓▒░
-❯ go run .
-2026/09/03 12:23:27 service=B listening on :8081
-curl "http://127.0.0.1:8081/call-echo?msg=hello"
-^Csignal: interrupt
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter/go-http/service-b  main ?2 ▓▒░········································░▒▓ 12m 53s  system Node ▓▒░
-❯ go run .             
-2026/09/03 12:36:23 service=B listening on :8081
-2026/09/03 12:36:37 service=B endpoint=/call-echo status=ok latency_ms=0
+**Terminal 1 — Service A (port 8080)**
 
-Third terminal: 
-A & B Enabled: 
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter  main ?2 ▓▒░····································································░▒▓ system Node ▓▒░
-❯ curl "http://127.0.0.1:8081/call-echo?msg=hello"
-{"service_a":{"echo":"hello"},"service_b":"ok"}
-A Disabled: 
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter  main ?2 ▓▒░····································································░▒▓ system Node ▓▒░
-❯ curl "http://127.0.0.1:8081/call-echo?msg=hello"
-{"error":"Get \"http://127.0.0.1:8080/echo?msg=hello\": dial tcp 127.0.0.1:8080: connect: connection refused","service_a":"unavailable","service_b":"ok"}
-B Disabled:
-░▒▓ ~/CMPE273/cmpe273-week1-lab1-starter  main ?2 ▓▒░····································································░▒▓ system Node ▓▒░
-❯ curl "http://127.0.0.1:8081/call-echo?msg=hello"
-curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+```bash
+cd go-http/service-a
+go run .
+```
 
+**Terminal 2 — Service B (port 8081)**
 
-What makes this a distributed system is that you can curl system B 
+```bash
+cd go-http/service-b
+go run .
+```
+
+**Terminal 3 — test**
+
+```bash
+# health checks
+curl -s -w "\nHTTP %{http_code}\n" "http://127.0.0.1:8080/health"
+curl -s -w "\nHTTP %{http_code}\n" "http://127.0.0.1:8081/health"
+
+# success
+curl -s -w "\nHTTP %{http_code}\n" "http://127.0.0.1:8081/call-echo?msg=hello"
+
+# failure: stop Service A with Ctrl+C in Terminal 1, then rerun
+curl -s -w "\nHTTP %{http_code}\n" "http://127.0.0.1:8081/call-echo?msg=hello"
+```
+<h1>A</h1>
+<img width="521" height="347" alt="image" src="https://github.com/user-attachments/assets/d5ed9d69-40d7-4045-bd74-8177c0b588ee" />
+<h1>B</h1>
+<img width="1031" height="442" alt="image" src="https://github.com/user-attachments/assets/ba1db122-6fe2-498a-9555-7219f7e3efab" />
+<h1>Output</h1>
+<img width="1023" height="163" alt="image" src="https://github.com/user-attachments/assets/ab3cb42d-0160-45a5-968a-c89d0c28ecd2" />
+
+<h2>Paragraph</h2>
+<p>What makes this a distributed system is that you can curl system B 
 and system A has to be turned on to get the {"echo":"hello"} message. 
 When system A is off you still can successfully curl system B. 
 Because system B can return a successful curl when system A is offline 
-this shows a distributed system.
+this shows a distributed system.</p>
+
